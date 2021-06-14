@@ -47,7 +47,7 @@ export const putUsuario = async (req: Request, res: Response) => {
     const usuario = await Usuario.findByPk(id);
     if (!usuario) {
       return res.status(404).json({
-        msg: "Noexiste un usuario con el id " + id,
+        msg: "No existe un usuario con el id " + id,
       });
     }
 
@@ -61,10 +61,25 @@ export const putUsuario = async (req: Request, res: Response) => {
   }
 };
 
-export const delUsuario = (req: Request, res: Response) => {
+export const delUsuario = async (req: Request, res: Response) => {
   const { id } = req.params;
-  res.json({
-    msg: "deleteUsuarios",
-    id,
-  });
+
+  try {
+    const usuario = await Usuario.findByPk(id);
+    if (!usuario) {
+      return res.status(404).json({
+        msg: "No existe un usuario con el id " + id,
+      });
+    }
+
+    // await usuario.destroy();
+    await usuario.update({estado:false});
+    res.json(usuario);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      msg: "Ha ocurrido un error, comuniquese con el administrador del sistema.",
+    });
+  }
 };
